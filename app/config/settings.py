@@ -131,3 +131,8 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery 설정
+CELERY_BROKER_URL = "redis://redis:6379/0"  # Redis 브로커 URL
+CELERY_ACCEPT_CONTENT = ["json"]  # JSON 형식으로 작업 처리
+CELERY_TASK_SERIALIZER = "json"  # JSON 직렬화를 사용
