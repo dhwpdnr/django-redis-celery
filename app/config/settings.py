@@ -43,6 +43,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "core",
+    "user",
 ]
 
 INSTALLED_APPS = SYSTEM_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -133,6 +134,17 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Celery 설정
-CELERY_BROKER_URL = "redis://redis:6379/0"  # Redis 브로커 URL
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 CELERY_ACCEPT_CONTENT = ["json"]  # JSON 형식으로 작업 처리
 CELERY_TASK_SERIALIZER = "json"  # JSON 직렬화를 사용
+
+AUTH_USER_MODEL = "user.User"
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+DEFAULT_FROM_EMAIL = 'test.email@gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'test.email@gmail.com'
+EMAIL_HOST_PASSWORD = 'test.email.password'
