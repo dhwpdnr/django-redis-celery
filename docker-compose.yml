@@ -21,7 +21,10 @@ services:
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=changeme
-      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0  # 브로커 DB 0
+      - CACHE_URL=redis://redis:6379/1  # 캐싱 DB 1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2  # 결과 DB 2
+
     depends_on:
       - db
       - redis
@@ -62,7 +65,7 @@ services:
       - DB_USER=devuser
       - DB_PASS=changeme
       - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
 
 
   celery_beat:

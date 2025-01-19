@@ -98,7 +98,7 @@ ACHE_TTL = 60 * 1500
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "redis://redis:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient"
         },
@@ -150,8 +150,8 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Celery 설정
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_BROKER_URL = "redis://redis:6379/0"  # DB 0 사용
+CELERY_RESULT_BACKEND = "redis://redis:6379/2"  # DB 2 사용
 CELERY_ACCEPT_CONTENT = ["json"]  # JSON 형식으로 작업 처리
 CELERY_TASK_SERIALIZER = "json"  # JSON 직렬화를 사용
 CELERY_TIMEZONE = 'Asia/Seoul'
