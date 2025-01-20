@@ -8,9 +8,9 @@ User = get_user_model()
 
 
 class UserTestCase(TestCase):
-    def tearDown(self):
+    def setUp(self):
         cache.clear()
-        return super().tearDown()
+        return super().setUp()
 
     def test_signup_api(self):
         response = self.client.post("/api/auth/signup",

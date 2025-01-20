@@ -6,4 +6,4 @@ class UserConfig(AppConfig):
     name = 'user'
 
     def ready(self):
-        import user.signals  # Signals 연결
+        import user.signals
