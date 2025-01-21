@@ -38,3 +38,14 @@ class TestTask(TestCase):
 
         self.assertEqual(len(response.json()), 3)
         self.assertEqual(len(queries), 1)
+
+    def test_task_create_rate_limit(self):
+        response = self.client.post("/api/todo/task/create", {"title": "Task"})
+        self.assertEqual(response.status_code, 201)
+        response = self.client.post("/api/todo/task/create", {"title": "Task"})
+        self.assertEqual(response.status_code, 429)
+
+        time.sleep(1)
+
+        response = self.client.post("/api/todo/task/create", {"title": "Task"})
+        self.assertEqual(response.status_code, 201)
