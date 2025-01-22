@@ -1,10 +1,12 @@
+import random
+
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .serializers import UserSerializer, UserReadSerializer
+from .serializers import UserSerializer, UserReadSerializer, GenerateOTPSerializer
 from .tasks import send_email_task
 
 User = get_user_model()
@@ -51,3 +53,35 @@ class UserListAPI(generics.ListAPIView):
         cache.set(cache_key, user_list, timeout=300)  # 300초 (5분)
 
         return Response(user_list, status=status.HTTP_200_OK)
+
+
+class GenerateOTPAPI(generics.GenericAPIView):
+    serializer_class = GenerateOTPSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
+        otp = random.randint(100000, 999999)
+        cache_key = f"otp:{email}"
+
+        cache.set(cache_key, otp, timeout=5)
+
+        return Response({"message": "OTP has been generated", "otp": otp}, status=status.HTTP_200_OK)
+
+
+class VerifyOTPAPI(generics.GenericAPIView):
+    def post(self, request):
+        email = request.data.get("email")
+        otp = request.data.get("otp")
+        cache_key = f"otp:{email}"
+        cached_otp = cache.get(cache_key)
+
+        if not cached_otp:
+            return Response({"error": "OTP has expired"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if int(otp) != cached_otp:
+            return Response({"error": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "OTP has been verified"}, status=status.HTTP_200_OK)

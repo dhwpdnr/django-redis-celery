@@ -15,3 +15,12 @@ class UserReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ("password",)
+
+
+class GenerateOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class VerifyOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.IntegerField()
