@@ -52,6 +52,8 @@ class UserListAPI(generics.ListAPIView):
 
         cache.set(cache_key, user_list, timeout=300)  # 300초 (5분)
 
+
+
         return Response(user_list, status=status.HTTP_200_OK)
 
 

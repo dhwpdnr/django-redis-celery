@@ -46,6 +46,7 @@ LOCAL_APPS = [
     "core",
     "user",
     "todo",
+    "util"
 ]
 
 INSTALLED_APPS = SYSTEM_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.middleware.APICountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
