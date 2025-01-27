@@ -30,33 +30,28 @@ class CreateTask(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-#
-#   rate_limit_key = f"rate_limit:{client_ip}"  # Redis에 저장할 키 생성
-#
-#     # Redis에서 키 확인
-#     if redis_client.exists(rate_limit_key):
-#         # 키가 존재하면 요청 제한
-#         ttl = redis_client.ttl(rate_limit_key)
-#         return JsonResponse(
-#             {"error": f"Too many requests. Try again in {ttl} seconds."},
-#             status=429
-#         )
-#
-#     # 키가 없으면 요청 허용 및 TTL 설정 (1초 동안 유효)
-#     redis_client.set(rate_limit_key, 1, ex=1)
 
+class TaskDetailAPI(generics.RetrieveAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
 
-# def rate_limited_view(request):
-#     client_ip = request.META['REMOTE_ADDR']
-#     key = f"rate_limit:{client_ip}"
-#
-#     # 현재 요청 수 가져오기
-#     current_count = redis_client.get(key)
-#     if current_count and int(current_count) >= 5:  # 5초에 5회 요청 제한
-#         return JsonResponse({"error": "Too many requests. Please try again later."}, status=429)
-#
-#     # 요청 수 증가 및 만료 시간 설정 (5초 TTL)
-#     redis_client.incr(key)
-#     redis_client.expire(key, 5)
-#
-#     return JsonResponse({"message": "Request successful"})
+    def get(self, request, *args, **kwargs):
+        # 요청 수 증가 및 만료 시간 설정 (5초 TTL)
+        task_id = kwargs['pk']
+        cache_key = f"task:{task_id}"
+        cached_task = cache.get(cache_key)
+        if cached_task:
+            print("Cache Hit!")
+            return Response(cached_task, status=status.HTTP_200_OK)
+
+        print("Cache Miss! Fetching from database...")
+        try:
+            task = Task.objects.get(id=task_id)
+        except Task.DoesNotExist:
+            return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TaskSerializer(task)
+
+        cache.set(cache_key, serializer.data, timeout=300)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

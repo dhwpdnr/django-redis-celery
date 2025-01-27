@@ -49,3 +49,29 @@ class TestTask(TestCase):
 
         response = self.client.post("/api/todo/task/create", {"title": "Task"})
         self.assertEqual(response.status_code, 201)
+
+    def test_task_detail_caching(self):
+        task = Task.objects.create(title="Task 1")
+
+        with CaptureQueriesContext(connection) as queries:
+            response = self.client.get(f"/api/todo/task/{task.id}")
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.json()["title"], "Task 1")
+        self.assertEqual(len(queries), 1)
+
+        with CaptureQueriesContext(connection) as queries:
+            response = self.client.get(f"/api/todo/task/{task.id}")
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.json()["title"], "Task 1")
+        self.assertEqual(len(queries), 0)
+        #
+        # time.sleep(3)
+        #
+        # with CaptureQueriesContext(connection) as queries:
+        #     response = self.client.get(f"/api/todo/task/{task.id}")
+        # self.assertEqual(response.status_code, 200)
+        #
+        # self.assertEqual(response.json()["title"], "Task 1")
+        # self.assertEqual(len(queries), 1)
