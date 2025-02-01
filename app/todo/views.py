@@ -52,7 +52,7 @@ class TaskUpdateDeleteDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = TaskSerializer(task)
 
-        cache.set(cache_key, serializer.data, timeout=300)
+        cache.set(cache_key, serializer.data, timeout=5)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -70,7 +70,9 @@ class TaskUpdateDeleteDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        self.perform_destroy(instance)
+
         if cache.get(f"task:{instance.id}"):
             cache.delete(f"task:{instance.id}")
+
+        self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
