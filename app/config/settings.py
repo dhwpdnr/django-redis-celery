@@ -46,7 +46,8 @@ LOCAL_APPS = [
     "core",
     "user",
     "todo",
-    "util"
+    "util",
+    "caching",
 ]
 
 INSTALLED_APPS = SYSTEM_APPS + THIRD_PARTY_APPS + LOCAL_APPS

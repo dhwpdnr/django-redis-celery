@@ -66,6 +66,9 @@ class TaskUpdateDeleteDetailAPI(generics.RetrieveUpdateDestroyAPIView):
         if cache.get(f"task:{instance.id}"):
             cache.delete(f"task:{instance.id}")
 
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
